@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 // CORS configuration
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'https://your-app-name.vercel.app',
+  process.env.FRONTEND_URL || 'https://true-grad.vercel.app',
   'http://localhost:3000', // For local development
   'http://localhost:5173'  // Alternative local dev port
 ];
