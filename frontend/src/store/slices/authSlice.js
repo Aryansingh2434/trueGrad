@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../api/axios';
 
 // Async thunks for API calls
 export const login = createAsyncThunk(
   'auth/login',
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/login', {
+      const response = await api.post('/auth/login', {
         username,
         password,
       });
@@ -23,7 +23,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/register', {
+      const response = await api.post('/auth/register', {
         username,
         password,
       });
@@ -45,11 +45,7 @@ export const loadUser = createAsyncThunk(
         return rejectWithValue('No token found');
       }
 
-      const response = await axios.get('/api/users/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get('/users/profile');
 
       return response.data;
     } catch (error) {
@@ -68,11 +64,7 @@ export const deductMessageCredit = createAsyncThunk(
         return rejectWithValue('No token found');
       }
 
-      const response = await axios.post('/api/users/deduct-message-credit', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post('/users/deduct-message-credit', {});
 
       return response.data;
     } catch (error) {

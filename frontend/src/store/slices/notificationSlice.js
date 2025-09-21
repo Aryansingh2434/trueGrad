@@ -1,17 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../api/axios';
 
 // Async thunks for notification API calls
 export const fetchNotifications = createAsyncThunk(
   'notifications/fetchNotifications',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/notifications', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get('/notifications');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to fetch notifications');
@@ -23,12 +18,7 @@ export const markNotificationAsRead = createAsyncThunk(
   'notifications/markAsRead',
   async (notificationId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(`/api/notifications/${notificationId}/read`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.patch(`/notifications/${notificationId}/read`, {});
       return notificationId;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to mark notification as read');
@@ -40,12 +30,7 @@ export const markAllNotificationsAsRead = createAsyncThunk(
   'notifications/markAllAsRead',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch('/api/notifications/mark-all-read', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.patch('/notifications/mark-all-read', {});
       return true;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to mark all notifications as read');
