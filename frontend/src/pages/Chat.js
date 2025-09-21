@@ -192,6 +192,21 @@ const Chat = () => {
           </div>
         )}
 
+        {/* New Chat Button */}
+        {!sidebarCollapsed && (
+          <div className="new-chat-section">
+            <button 
+              className="new-chat-button-rounded"
+              onClick={handleNewChat}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 5v14M5 12h14" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              New Chat
+            </button>
+          </div>
+        )}
+
         <div className="conversations-list">
           {conversations.length === 0 ? (
             <div className="no-conversations">
