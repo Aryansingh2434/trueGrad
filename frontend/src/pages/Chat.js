@@ -20,6 +20,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const messagesEndRef = useRef(null);
 
   const { user } = useSelector((state) => state.auth);
@@ -125,22 +126,71 @@ const Chat = () => {
     dispatch(markAllNotificationsAsRead());
   };
 
+  const toggleSidebar = () => {
+    const newState = !sidebarCollapsed;
+    console.log('Toggling sidebar from', sidebarCollapsed, 'to', newState);
+    setSidebarCollapsed(newState);
+  };
+
   return (
     <div className="chat-container">
       {/* Left Sidebar */}
-      <div className="sidebar">
+      <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <h2 className="sidebar-title">Conversations</h2>
-          <button 
-            className="new-chat-button"
-            onClick={handleNewChat}
-            title="New Chat"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M12 5v14M5 12h14" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </button>
+          {!sidebarCollapsed && <h2 className="sidebar-title">Conversations</h2>}
+          <div className="sidebar-header-actions">
+            <button 
+              className="new-chat-button"
+              onClick={handleNewChat}
+              title="New Chat"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 5v14M5 12h14" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <button 
+              className="sidebar-toggle-button"
+              onClick={toggleSidebar}
+              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {sidebarCollapsed ? (
+                  <>
+                    <polyline points="9 18 15 12 9 6"/>
+                  </>
+                ) : (
+                  <>
+                    <polyline points="15 18 9 12 15 6"/>
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
+        
+        {/* Always visible floating buttons for collapsed state */}
+        {sidebarCollapsed && (
+          <div className="collapsed-sidebar-buttons">
+            <button 
+              className="collapsed-sidebar-toggle-button"
+              onClick={toggleSidebar}
+              title="Expand sidebar"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+            <button 
+              className="collapsed-new-chat-button"
+              onClick={handleNewChat}
+              title="New Chat"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 5v14M5 12h14" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+        )}
 
         <div className="conversations-list">
           {conversations.length === 0 ? (
@@ -171,7 +221,7 @@ const Chat = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="main-chat">
+      <div className={`main-chat ${sidebarCollapsed ? 'expanded' : ''}`}>
         {/* Header */}
         <div className="chat-header">
           <div className="chat-header-title">
@@ -257,16 +307,34 @@ const Chat = () => {
             {/* User Menu */}
             <div className="user-menu-container">
               <button
-                className="user-avatar"
+                className="user-profile-button"
                 onClick={() => setShowUserMenu(!showUserMenu)}
               >
-                {user?.username?.charAt(0).toUpperCase() || 'U'}
+                <div className="user-avatar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+                <span className="user-name">{user?.username || 'User'}</span>
+                <svg className="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
               </button>
 
               {showUserMenu && (
-                <div className="user-menu">
+                <div className={`user-menu ${showUserMenu ? 'show' : ''}`}>
                   <div className="user-menu-item user-info">
-                    <span>{user?.username || 'User'}</span>
+                    <div className="user-dropdown-avatar">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
+                    </div>
+                    <div className="user-dropdown-info">
+                      <div className="user-dropdown-name">{user?.username || 'User'}</div>
+                      <div className="user-dropdown-email">{user?.email || 'user@example.com'}</div>
+                    </div>
                   </div>
                   <button className="user-menu-item" onClick={() => setShowUserMenu(false)}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
